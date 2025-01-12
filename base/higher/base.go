@@ -53,6 +53,21 @@ func Wrap[S, A, B any](fn func(A) B) b.Parser[S, func(A) B] {
 	}
 }
 
+// Const will create parser for a value
+func Const[S any, A any](value A) b.Parser[S, A] {
+	return func(_ s.SimpleStream[S]) (A, error) {
+		return value, nil
+	}
+}
+
+// Fail will create a failing parser
+func Fail[S any, A any](err error) b.Parser[S, A] {
+	return func(_ s.SimpleStream[S]) (A, error) {
+		var x A
+		return x, err
+	}
+}
+
 func Apply[S, A, B any](p1 b.Parser[S, func(A) B], p2 b.Parser[S, A]) b.Parser[S, B] {
 	return func(ss s.SimpleStream[S]) (B, error) {
 		var zero B

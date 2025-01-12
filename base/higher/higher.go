@@ -157,3 +157,34 @@ func Surround[S, A, B any](w b.Parser[S, B], p b.Parser[S, A]) b.Parser[S, A] {
 		return res, nil
 	}
 }
+
+// Special case combinator
+func Skip[S, A, B any](skip b.Parser[S, B], p b.Parser[S, A]) b.Parser[S, A] {
+	return func(ss s.SimpleStream[S]) (A, error) {
+		var zero A
+		_, err := skip(ss)
+		if err != nil {
+			return zero, err
+		}
+
+		return p(ss)
+	}
+}
+
+// Special case combinator
+func SkipAfter[S, A, B any](p b.Parser[S, A], skip b.Parser[S, B]) b.Parser[S, A] {
+	return func(ss s.SimpleStream[S]) (A, error) {
+		var zero A
+		res, err := p(ss)
+		if err != nil {
+			return zero, err
+		}
+
+		_, err = skip(ss)
+		if err != nil {
+			return zero, err
+		}
+
+		return res, nil
+	}
+}
