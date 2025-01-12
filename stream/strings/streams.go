@@ -21,7 +21,7 @@ func NewStringStream(content string) stream.SimpleStream[rune] {
 }
 
 func (s *StringStream) Peek() (rune, error) {
-	if s.offset < s.len-1 {
+	if s.offset < s.len {
 		return rune(s.content[s.offset]), nil
 	}
 
@@ -37,11 +37,13 @@ func (s *StringStream) Seek(n int) {
 }
 
 func (s *StringStream) Take() (rune, error) {
-	peek1, err := s.Peek()
-	if err == nil {
+	if s.offset < s.len {
+		val := s.content[s.offset]
 		s.offset++
+		return rune(val), nil
 	}
-	return peek1, err
+
+	return 0, io.EOF
 }
 
 func (s *StringStream) TakeN(num int) ([]rune, error) {
