@@ -55,8 +55,10 @@ func Sequence[S, A any](ps ...b.Parser[S, A]) b.Parser[S, []A] {
 
 func Optional[S any, A any](p b.Parser[S, A], def A) b.Parser[S, A] {
 	return func(ss s.SimpleStream[S]) (A, error) {
+		idx := ss.Offset()
 		result, err := p(ss)
 		if err != nil {
+			ss.Seek(idx)
 			return def, nil
 		}
 
