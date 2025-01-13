@@ -113,7 +113,7 @@ func ToMap[S any, A comparable, B any](keyP b.Parser[S, A], connP b.Parser[S, S]
 			_, err = sep(ss)
 			if err != nil {
 				ss.Seek(idx)
-				return mapping, err
+				return mapping, nil
 			}
 		}
 	}
