@@ -73,14 +73,14 @@ func TestStringStream(t *testing.T) {
 			ss := strings.NewStringStream(content)
 
 			until := ss.TakeUntil([]rune(""))
-			assert.Equal(t, "", until)
+			assert.Equal(t, "", string(until))
 			assert.Equal(t, 0, ss.Offset())
 		})
 		t.Run("returns empty when no matches", func(t *testing.T) {
 			ss := strings.NewStringStream(content)
 
 			until := ss.TakeUntil([]rune("funk"))
-			assert.Equal(t, "", until)
+			assert.Equal(t, "", string(until))
 			assert.Equal(t, 0, ss.Offset())
 		})
 		t.Run("with non empty string", func(t *testing.T) {

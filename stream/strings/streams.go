@@ -93,12 +93,12 @@ func (s *StringStream) TakeWhile(p stream.Predicate[rune], escape rune) []rune {
 
 func (s *StringStream) TakeUntil(str []rune) []rune {
 	if len(str) == 0 {
-		return nil
+		return []rune("")
 	}
 
 	idx := strings.Index(s.content[s.offset:], string(str))
 	if idx < 1 {
-		return nil
+		return []rune("")
 	}
 
 	val := s.content[s.offset : s.offset+idx]
