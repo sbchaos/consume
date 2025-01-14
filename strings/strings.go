@@ -9,6 +9,8 @@ import (
 	"github.com/sbchaos/consume/stream"
 )
 
+type StringParser base.Parser[rune, string]
+
 type StringMatcher func(s string, t string) bool
 
 var EqualIgnoreCase StringMatcher = strings.EqualFold
@@ -26,7 +28,7 @@ func String(expected string, fn StringMatcher) base.Parser[rune, string] {
 		}
 
 		if fn(string(tokens), expected) {
-			return "", nil
+			return expected, nil
 		}
 
 		return "", base.ErrNotMatched
