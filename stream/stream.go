@@ -18,6 +18,8 @@ type MultiStream[S any] interface {
 	TakeN(num int) ([]S, error)
 	// TakeWhile To get tokens until a condition is met
 	TakeWhile(p Predicate[S], escape S) []S
+	// TakeUntil will get the values until the specified sequence is found
+	TakeUntil(seq []S) []S
 }
 
 type ObservableStream[S any] interface {

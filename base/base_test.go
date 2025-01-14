@@ -41,6 +41,26 @@ func TestBaseParsers(t *testing.T) {
 		})
 	})
 
+	t.Run("TakeWhile", func(t *testing.T) {
+		ss := strings.NewStringStream("this is a stream text")
+		p := base.TakeWhile(func(a rune) bool {
+			return a != 'r'
+		}, 0)
+
+		v, err := run.Parse(ss, p)
+		assert.NoError(t, err)
+		assert.Equal(t, "this is a st", string(v))
+	})
+
+	t.Run("TakeUntil", func(t *testing.T) {
+		ss := strings.NewStringStream("this is a stream text")
+		p := base.TakeUntil([]rune("stream"))
+
+		v, err := run.Parse(ss, p)
+		assert.NoError(t, err)
+		assert.Equal(t, "this is a ", string(v))
+	})
+
 	t.Run("EOF", func(t *testing.T) {
 		ss := strings.NewStringStream("")
 

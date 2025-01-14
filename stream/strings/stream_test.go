@@ -67,4 +67,28 @@ func TestStringStream(t *testing.T) {
 		assert.Equal(t, "this is \\\"a\\\" string", string(while))
 		assert.Equal(t, 20, ss.Offset())
 	})
+
+	t.Run("TakeUntil", func(t *testing.T) {
+		t.Run("returns empty when empty string sent", func(t *testing.T) {
+			ss := strings.NewStringStream(content)
+
+			until := ss.TakeUntil([]rune(""))
+			assert.Equal(t, "", until)
+			assert.Equal(t, 0, ss.Offset())
+		})
+		t.Run("returns empty when no matches", func(t *testing.T) {
+			ss := strings.NewStringStream(content)
+
+			until := ss.TakeUntil([]rune("funk"))
+			assert.Equal(t, "", until)
+			assert.Equal(t, 0, ss.Offset())
+		})
+		t.Run("with non empty string", func(t *testing.T) {
+			ss := strings.NewStringStream(content)
+
+			until := ss.TakeUntil([]rune("string"))
+			assert.Equal(t, "this is a stream with lots of ", string(until))
+			assert.Equal(t, 30, ss.Offset())
+		})
+	})
 }

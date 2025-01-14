@@ -21,6 +21,20 @@ func Satisfy[S any](f stream.Predicate[S]) Parser[S, S] {
 	}
 }
 
+func TakeWhile[S any](f stream.Predicate[S], escape S) Parser[S, []S] {
+	return func(ss stream.SimpleStream[S]) ([]S, error) {
+		token := ss.TakeWhile(f, escape)
+		return token, nil
+	}
+}
+
+func TakeUntil[S any](seq []S) Parser[S, []S] {
+	return func(ss stream.SimpleStream[S]) ([]S, error) {
+		toks := ss.TakeUntil(seq)
+		return toks, nil
+	}
+}
+
 // EOF - make sure the input stream has finished
 func EOF[S any]() Parser[S, bool] {
 	return func(ss stream.SimpleStream[S]) (bool, error) {

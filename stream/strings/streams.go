@@ -2,6 +2,7 @@ package strings
 
 import (
 	"io"
+	"strings"
 
 	"github.com/sbchaos/consume/stream"
 )
@@ -88,4 +89,19 @@ func (s *StringStream) TakeWhile(p stream.Predicate[rune], escape rune) []rune {
 		s.offset = offset + end
 	}
 	return []rune(s.content[offset:s.offset])
+}
+
+func (s *StringStream) TakeUntil(str []rune) []rune {
+	if len(str) == 0 {
+		return nil
+	}
+
+	idx := strings.Index(s.content[s.offset:], string(str))
+	if idx < 1 {
+		return nil
+	}
+
+	val := s.content[s.offset : s.offset+idx]
+	s.offset += idx
+	return []rune(val)
 }
