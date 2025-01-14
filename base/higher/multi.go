@@ -1,8 +1,6 @@
 package higher
 
 import (
-	"fmt"
-
 	b "github.com/sbchaos/consume/base"
 	s "github.com/sbchaos/consume/stream"
 )
@@ -92,19 +90,19 @@ func ToMap[S any, A comparable, B any](keyP b.Parser[S, A], connP b.Parser[S, S]
 			key, err := keyP(ss)
 			if err != nil {
 				ss.Seek(idx)
-				return mapping, fmt.Errorf("error in parsing map key: %w", err)
+				return mapping, nil
 			}
 
 			_, err = connP(ss)
 			if err != nil {
 				ss.Seek(idx)
-				return mapping, err
+				return mapping, nil
 			}
 
 			val, err := valP(ss)
 			if err != nil {
 				ss.Seek(idx)
-				return mapping, fmt.Errorf("error parsing map value: %w", err)
+				return mapping, nil
 			}
 
 			mapping[key] = val
