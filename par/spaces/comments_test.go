@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/sbchaos/consume/comb"
-	"github.com/sbchaos/consume/comb/spaces"
 	"github.com/sbchaos/consume/par"
+	"github.com/sbchaos/consume/par/spaces"
 	"github.com/sbchaos/consume/par/strings"
 )
 

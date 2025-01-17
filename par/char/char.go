@@ -1,21 +1,21 @@
 package char
 
 import (
-	b "github.com/sbchaos/consume/par"
+	p "github.com/sbchaos/consume/par"
 	s "github.com/sbchaos/consume/stream"
 )
 
-func Single(r rune) b.Parser[rune, rune] {
-	return b.Satisfy(func(i rune) bool {
+func Single(r rune) p.Parser[rune, rune] {
+	return p.Satisfy(func(i rune) bool {
 		return i == r
 	})
 }
 
-func NewLine() b.Parser[rune, rune] {
+func NewLine() p.Parser[rune, rune] {
 	return Single('\n')
 }
 
-func WhiteSpaces() b.Parser[rune, rune] {
+func WhiteSpaces() p.Parser[rune, rune] {
 	return func(stream s.SimpleStream[rune]) (rune, error) {
 		matcher := func(t rune) bool {
 			if t == '\n' || t == '\r' {
@@ -32,14 +32,14 @@ func WhiteSpaces() b.Parser[rune, rune] {
 	}
 }
 
-func Range[S rune](from, to S) b.Parser[S, S] {
-	return b.Satisfy[S](func(x S) bool {
+func Range[S rune](from, to S) p.Parser[S, S] {
+	return p.Satisfy[S](func(x S) bool {
 		return x >= from && x <= to
 	})
 }
 
-func NotRange[S rune](from, to S) b.Parser[S, S] {
-	return b.Satisfy[S](func(x S) bool {
+func NotRange[S rune](from, to S) p.Parser[S, S] {
+	return p.Satisfy[S](func(x S) bool {
 		return x < from || x > to
 	})
 }
