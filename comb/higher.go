@@ -1,7 +1,7 @@
-package higher
+package comb
 
 import (
-	b "github.com/sbchaos/consume/base"
+	b "github.com/sbchaos/consume/par"
 	s "github.com/sbchaos/consume/stream"
 )
 
@@ -66,7 +66,7 @@ func Optional[S any, A any](p b.Parser[S, A], def A) b.Parser[S, A] {
 	}
 }
 
-// A simplified version of combinator for 2 parsers, alternative to flatmap -> flatmap
+// And is simplified version of combinator for 2 parsers, alternative to flatmap -> flatmap
 // A special case of 2 successive apply of flatmaps
 func And[S, A, B, C any](x b.Parser[S, A], y b.Parser[S, B], compose b.Composer[A, B, C]) b.Parser[S, C] {
 	return func(ss s.SimpleStream[S]) (C, error) {
@@ -160,7 +160,7 @@ func Surround[S, A, B any](w b.Parser[S, B], p b.Parser[S, A]) b.Parser[S, A] {
 	}
 }
 
-// Special case combinator
+// Skip is a Special case combinator
 func Skip[S, A, B any](skip b.Parser[S, B], p b.Parser[S, A]) b.Parser[S, A] {
 	return func(ss s.SimpleStream[S]) (A, error) {
 		var zero A
@@ -173,7 +173,6 @@ func Skip[S, A, B any](skip b.Parser[S, B], p b.Parser[S, A]) b.Parser[S, A] {
 	}
 }
 
-// Special case combinator
 func SkipAfter[S, A, B any](p b.Parser[S, A], skip b.Parser[S, B]) b.Parser[S, A] {
 	return func(ss s.SimpleStream[S]) (A, error) {
 		var zero A

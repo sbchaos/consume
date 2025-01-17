@@ -3,7 +3,7 @@ package char
 import (
 	"unicode"
 
-	b "github.com/sbchaos/consume/base"
+	b "github.com/sbchaos/consume/par"
 )
 
 // IsDigit parses decimal digit UTF-8 characters.
@@ -21,7 +21,7 @@ func IsLetter() b.Parser[rune, rune] {
 	return b.Satisfy(unicode.IsLetter)
 }
 
-// IsLower parses UTF-8 in upper case char
+// IsUpper parses UTF-8 in upper case char
 func IsUpper() b.Parser[rune, rune] {
 	return b.Satisfy(unicode.IsUpper)
 }

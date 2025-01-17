@@ -1,7 +1,7 @@
-package higher
+package comb
 
 import (
-	b "github.com/sbchaos/consume/base"
+	b "github.com/sbchaos/consume/par"
 	s "github.com/sbchaos/consume/stream"
 )
 

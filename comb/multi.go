@@ -1,7 +1,7 @@
-package higher
+package comb
 
 import (
-	b "github.com/sbchaos/consume/base"
+	b "github.com/sbchaos/consume/par"
 	s "github.com/sbchaos/consume/stream"
 )
 
@@ -76,7 +76,7 @@ func NoneOf[S comparable](data ...S) b.Parser[S, S] {
 	})
 }
 
-// A special parser to parse a key value list to golang map
+// ToMap is a special parser to parse a key value list to golang map
 // Created for performance reasons
 func ToMap[S any, A comparable, B any](keyP b.Parser[S, A], connP b.Parser[S, S],
 	valP b.Parser[S, B], sep b.Parser[S, S],

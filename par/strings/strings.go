@@ -4,12 +4,12 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/sbchaos/consume/base"
-	"github.com/sbchaos/consume/char"
+	"github.com/sbchaos/consume/par"
+	"github.com/sbchaos/consume/par/char"
 	"github.com/sbchaos/consume/stream"
 )
 
-type StringParser base.Parser[rune, string]
+type StringParser par.Parser[rune, string]
 
 type StringMatcher func(s string, t string) bool
 
@@ -18,7 +18,7 @@ var Equals StringMatcher = func(s, t string) bool {
 	return s == t
 }
 
-func String(expected string, fn StringMatcher) base.Parser[rune, string] {
+func String(expected string, fn StringMatcher) par.Parser[rune, string] {
 	return func(ss stream.SimpleStream[rune]) (string, error) {
 		n := len(expected)
 
@@ -31,14 +31,14 @@ func String(expected string, fn StringMatcher) base.Parser[rune, string] {
 			return expected, nil
 		}
 
-		return "", base.ErrNotMatched
+		return "", par.ErrNotMatched
 	}
 }
 
 func QuotedString(escape rune, quotes ...struct {
 	Start rune
 	End   rune
-}) base.Parser[rune, string] {
+}) par.Parser[rune, string] {
 	seq := '\\'
 	if escape > 0 {
 		seq = escape
@@ -74,7 +74,7 @@ func QuotedString(escape rune, quotes ...struct {
 	}
 }
 
-func Choice(options []string, fn StringMatcher) base.Parser[rune, string] {
+func Choice(options []string, fn StringMatcher) par.Parser[rune, string] {
 	return func(strm stream.SimpleStream[rune]) (string, error) {
 		offset := strm.Offset()
 		for _, op1 := range options {
@@ -93,11 +93,11 @@ func Choice(options []string, fn StringMatcher) base.Parser[rune, string] {
 			}
 		}
 
-		return "", base.ErrNotMatched
+		return "", par.ErrNotMatched
 	}
 }
 
-func Sequence(values []string, fn StringMatcher) base.Parser[rune, string] {
+func Sequence(values []string, fn StringMatcher) par.Parser[rune, string] {
 	spaces := char.WhiteSpaces()
 	return func(ss stream.SimpleStream[rune]) (string, error) {
 		for _, val := range values {
@@ -109,7 +109,7 @@ func Sequence(values []string, fn StringMatcher) base.Parser[rune, string] {
 			}
 
 			if !fn(val, string(tokens)) {
-				return "", base.ErrNotMatched
+				return "", par.ErrNotMatched
 			}
 
 			_, _ = spaces(ss)

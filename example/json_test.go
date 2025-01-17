@@ -9,13 +9,13 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	b "github.com/sbchaos/consume/base"
-	h "github.com/sbchaos/consume/base/higher"
-	"github.com/sbchaos/consume/char"
-	"github.com/sbchaos/consume/run"
-	"github.com/sbchaos/consume/special"
+	"github.com/sbchaos/consume/comb"
+	"github.com/sbchaos/consume/comb/list"
+	"github.com/sbchaos/consume/comb/maps"
+	b "github.com/sbchaos/consume/par"
+	"github.com/sbchaos/consume/par/char"
+	strings2 "github.com/sbchaos/consume/par/strings"
 	ss "github.com/sbchaos/consume/stream/strings"
-	sp "github.com/sbchaos/consume/strings"
 )
 
 type Json interface {
@@ -29,9 +29,9 @@ func (j *JNull) ToString() string {
 }
 
 func ParseJNull() b.Parser[rune, Json] {
-	return h.FMap(func(_ string) Json {
+	return comb.FMap(func(_ string) Json {
 		return &JNull{}
-	}, sp.String("null", sp.EqualIgnoreCase))
+	}, strings2.String("null", strings2.EqualIgnoreCase))
 }
 
 type JBool struct {
@@ -43,9 +43,9 @@ func (j *JBool) ToString() string {
 }
 
 func ParseJBool() b.Parser[rune, Json] {
-	return h.FMap(func(a string) Json {
+	return comb.FMap(func(a string) Json {
 		return &JBool{value: strings.EqualFold(a, "TRUE")}
-	}, sp.Choice([]string{"true", "false"}, sp.EqualIgnoreCase))
+	}, strings2.Choice([]string{"true", "false"}, strings2.EqualIgnoreCase))
 }
 
 type JString struct {
@@ -57,20 +57,20 @@ func (j *JString) ToString() string {
 }
 
 func ParseJString() b.Parser[rune, Json] {
-	return h.FMap(func(a string) Json {
+	return comb.FMap(func(a string) Json {
 		return &JString{value: a}
 	}, QuotedString())
 }
 
 func QuotedString() b.Parser[rune, string] {
-	return sp.QuotedString(0, struct {
+	return strings2.QuotedString(0, struct {
 		Start rune
 		End   rune
 	}{Start: '"', End: '"'})
 }
 
 func Spaces() b.Parser[rune, string] {
-	return h.FMap(func(a rune) string {
+	return comb.FMap(func(a rune) string {
 		return ""
 	}, char.WhiteSpaces())
 }
@@ -84,14 +84,14 @@ func (j *JNumber) ToString() string {
 }
 
 func ParseJNumber() b.Parser[rune, Json] {
-	return h.FMap1(func(a string) (Json, error) {
+	return comb.FMap1(func(a string) (Json, error) {
 		num, err := strconv.ParseFloat(a, 64)
 		if err != nil {
 			return &JNumber{}, err
 		}
 
 		return &JNumber{value: num}, nil
-	}, sp.CustomString(func(a rune) bool {
+	}, strings2.CustomString(func(a rune) bool {
 		return unicode.IsDigit(a) || a == '.'
 	}))
 }
@@ -119,9 +119,9 @@ func (j *JArray) ToString() string {
 }
 
 func ParseArray() b.Parser[rune, Json] {
-	return h.FMap(func(a []string) Json {
+	return comb.FMap(func(a []string) Json {
 		return &JArray{values: a}
-	}, special.List(QuotedString(), Spaces()))
+	}, list.List(QuotedString(), Spaces()))
 }
 
 type JObject struct {
@@ -154,9 +154,9 @@ func (j *JObject) ToString() string {
 }
 
 func ParseJObject() b.Parser[rune, Json] {
-	return h.FMap(func(a map[string]string) Json {
+	return comb.FMap(func(a map[string]string) Json {
 		return &JObject{values: a}
-	}, special.ObjectLiteral(QuotedString(), QuotedString(), Spaces()))
+	}, maps.ObjectLiteral(QuotedString(), QuotedString(), Spaces()))
 }
 
 func JsonParser(t *testing.T) b.Parser[rune, Json] {
@@ -167,7 +167,7 @@ func JsonParser(t *testing.T) b.Parser[rune, Json] {
 	arr := b.Trace(t, "array", ParseArray())
 	obj := b.Trace(t, "object", ParseJObject())
 
-	return h.Choice(
+	return comb.Choice(
 		null,
 		boolP,
 		num,
@@ -181,7 +181,7 @@ func TestJsonParsing(t *testing.T) {
 	t.Run("parses Null", func(t *testing.T) {
 		input := ss.NewStringStream("null")
 
-		j, err := run.Parse(input, JsonParser(t))
+		j, err := b.Parse(input, JsonParser(t))
 		assert.NoError(t, err)
 		assert.Equal(t, "null", j.ToString())
 	})
@@ -190,14 +190,14 @@ func TestJsonParsing(t *testing.T) {
 		t.Run("parses true value", func(t *testing.T) {
 			input := ss.NewStringStream("true")
 
-			j, err := run.Parse(input, JsonParser(t))
+			j, err := b.Parse(input, JsonParser(t))
 			assert.NoError(t, err)
 			assert.Equal(t, "true", j.ToString())
 		})
 		t.Run("parses false value", func(t *testing.T) {
 			input := ss.NewStringStream("false")
 
-			j, err := run.Parse(input, JsonParser(t))
+			j, err := b.Parse(input, JsonParser(t))
 			assert.NoError(t, err)
 			assert.Equal(t, "false", j.ToString())
 		})
@@ -206,14 +206,14 @@ func TestJsonParsing(t *testing.T) {
 		t.Run("parses integer value", func(t *testing.T) {
 			input := ss.NewStringStream("5")
 
-			j, err := run.Parse(input, JsonParser(t))
+			j, err := b.Parse(input, JsonParser(t))
 			assert.NoError(t, err)
 			assert.Equal(t, "5", j.ToString())
 		})
 		t.Run("parses double value", func(t *testing.T) {
 			input := ss.NewStringStream("6.5")
 
-			j, err := run.Parse(input, JsonParser(t))
+			j, err := b.Parse(input, JsonParser(t))
 			assert.NoError(t, err)
 			assert.Equal(t, "6.5", j.ToString())
 		})
@@ -221,7 +221,7 @@ func TestJsonParsing(t *testing.T) {
 	t.Run("ParseJString parses string value", func(t *testing.T) {
 		input := ss.NewStringStream(`"str"`)
 
-		j, err := run.Parse(input, JsonParser(t))
+		j, err := b.Parse(input, JsonParser(t))
 		assert.NoError(t, err)
 		assert.Equal(t, "\"str\"", j.ToString())
 	})
@@ -229,7 +229,7 @@ func TestJsonParsing(t *testing.T) {
 		input := ss.NewStringStream(`["abc", "def"]`)
 
 		p1 := JsonParser(t)
-		j, err := run.Parse(input, p1)
+		j, err := b.Parse(input, p1)
 		assert.NoError(t, err)
 		assert.Equal(t, "[abc,def]", j.ToString())
 	})
@@ -237,7 +237,7 @@ func TestJsonParsing(t *testing.T) {
 		input := ss.NewStringStream(`{"abc": "def"}`)
 
 		p1 := JsonParser(t)
-		j, err := run.Parse(input, p1)
+		j, err := b.Parse(input, p1)
 		assert.NoError(t, err)
 		assert.Equal(t, "{\"abc\":\"def\"}", j.ToString())
 	})

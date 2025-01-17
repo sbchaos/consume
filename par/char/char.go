@@ -1,7 +1,7 @@
 package char
 
 import (
-	b "github.com/sbchaos/consume/base"
+	b "github.com/sbchaos/consume/par"
 	s "github.com/sbchaos/consume/stream"
 )
 

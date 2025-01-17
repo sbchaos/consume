@@ -1,14 +1,15 @@
-package special_test
+package maps_test
 
 import (
 	"testing"
 
-	"github.com/sbchaos/consume/base/higher"
-	"github.com/sbchaos/consume/char"
-	"github.com/sbchaos/consume/run"
-	"github.com/sbchaos/consume/special"
-	"github.com/sbchaos/consume/strings"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/sbchaos/consume/comb"
+	"github.com/sbchaos/consume/comb/maps"
+	"github.com/sbchaos/consume/par"
+	"github.com/sbchaos/consume/par/char"
+	"github.com/sbchaos/consume/par/strings"
 )
 
 func TestMaps(t *testing.T) {
@@ -17,11 +18,11 @@ func TestMaps(t *testing.T) {
 		"name": "object",
 		"property": "string"
 		}`
-		sp := higher.FMap(func(_ rune) string { return "" }, char.WhiteSpaces())
+		sp := comb.FMap(func(_ rune) string { return "" }, char.WhiteSpaces())
 		str1 := strings.StringWithOptionalQuotes()
-		p1 := special.ObjectLiteral(str1, str1, sp)
+		p1 := maps.ObjectLiteral(str1, str1, sp)
 
-		val, err := run.ParseString(input, p1)
+		val, err := par.ParseString(input, p1)
 		assert.NoError(t, err)
 		assert.Equal(t, "object", val["name"])
 		assert.Equal(t, "string", val["property"])
@@ -30,11 +31,11 @@ func TestMaps(t *testing.T) {
 		input := ` [
 			(name, object),
 			(property, string)]`
-		sp := higher.FMap(func(_ rune) string { return "" }, char.WhiteSpaces())
+		sp := comb.FMap(func(_ rune) string { return "" }, char.WhiteSpaces())
 		str1 := strings.StringWithOptionalQuotes()
-		p1 := special.AssociatedList(str1, str1, sp)
+		p1 := maps.AssociatedList(str1, str1, sp)
 
-		val, err := run.ParseString(input, p1)
+		val, err := par.ParseString(input, p1)
 		assert.NoError(t, err)
 		assert.Equal(t, "object", val["name"])
 		assert.Equal(t, "string", val["property"])
@@ -43,11 +44,11 @@ func TestMaps(t *testing.T) {
 		input := `
 			name=object
 			property=string`
-		sp := higher.FMap(func(_ rune) string { return "" }, char.WhiteSpaces())
+		sp := comb.FMap(func(_ rune) string { return "" }, char.WhiteSpaces())
 		str1 := strings.StringWithOptionalQuotes()
-		p1 := special.KVPair(str1, str1, sp)
+		p1 := maps.KVPair(str1, str1, sp)
 
-		val, err := run.ParseString(input, p1)
+		val, err := par.ParseString(input, p1)
 		assert.NoError(t, err)
 		assert.Equal(t, "object", val["name"])
 		assert.Equal(t, "string", val["property"])

@@ -1,29 +1,29 @@
-package special
+package spaces
 
 import (
 	"strings"
 
-	"github.com/sbchaos/consume/base"
+	"github.com/sbchaos/consume/par"
 	"github.com/sbchaos/consume/stream"
 )
 
 // LineComment will parse a line comment
 // It will consume everything until `\n`, but it will not include newline in content
 // eg start of this line in golang or -- in sql
-func LineComment(seq string) base.Parser[rune, string] {
+func LineComment(seq string) par.Parser[rune, string] {
 	return BuildSpaceConsumer(seq, "", "")
 }
 
 // BlockComment will parse everything until the end block is found, it does not allow nesting
 // For parsing things like /* in golang or """ in python
-func BlockComment(start, end string) base.Parser[rune, string] {
+func BlockComment(start, end string) par.Parser[rune, string] {
 	return BuildSpaceConsumer("", start, end)
 }
 
 // BuildSpaceConsumer can be used to build a complex space consumer which can
 // consume spaces, tabs, newlines, block and line comments
 // returns the content of comment or else the empty string, \n is default newline
-func BuildSpaceConsumer(lineStart, blockStart, blockEnd string, newline ...rune) base.Parser[rune, string] {
+func BuildSpaceConsumer(lineStart, blockStart, blockEnd string, newline ...rune) par.Parser[rune, string] {
 	moreNewLine := len(newline) > 0
 	ll := len(lineStart)
 	bl := len(blockStart)
