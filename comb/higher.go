@@ -189,7 +189,7 @@ func SkipAfter[S, A, B any](p1 p.Parser[S, A], skip p.Parser[S, B]) p.Parser[S, 
 	}
 }
 
-func Pause[S, A, B any](f func(A) error, p p.Parser[S, A]) p.Parser[S, A] {
+func Pause[S, A any](f func(A) error, p p.Parser[S, A]) p.Parser[S, A] {
 	return func(ss s.SimpleStream[S]) (A, error) {
 		result, err := p(ss)
 		if err != nil {
