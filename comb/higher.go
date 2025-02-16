@@ -12,9 +12,8 @@ func Try[S any, A any](p1 p.Parser[S, A]) p.Parser[S, A] {
 
 		result, err := p1(ss)
 		if err != nil {
-			var zero A
 			ss.Seek(idx)
-			return zero, err
+			return result, err
 		}
 
 		return result, nil
@@ -25,8 +24,8 @@ func Try[S any, A any](p1 p.Parser[S, A]) p.Parser[S, A] {
 func Choice[S any, A any](ps ...p.Parser[S, A]) p.Parser[S, A] {
 	return func(ss s.SimpleStream[S]) (A, error) {
 		var zero A
-		for _, p := range ps {
-			result, err := Try(p)(ss)
+		for _, p1 := range ps {
+			result, err := Try(p1)(ss)
 			if err == nil {
 				return result, err
 			}
@@ -95,7 +94,7 @@ func SepBy[S, A, B any](sep p.Parser[S, B], item p.Parser[S, A]) p.Parser[S, []A
 
 		token, err := item(ss)
 		if err != nil {
-			return result, nil
+			return result, err
 		}
 		result = append(result, token)
 
@@ -187,5 +186,17 @@ func SkipAfter[S, A, B any](p1 p.Parser[S, A], skip p.Parser[S, B]) p.Parser[S, 
 		}
 
 		return res, nil
+	}
+}
+
+func Pause[S, A, B any](f func(A) error, p p.Parser[S, A]) p.Parser[S, A] {
+	return func(ss s.SimpleStream[S]) (A, error) {
+		result, err := p(ss)
+		if err != nil {
+			return result, err
+		}
+
+		err = f(result)
+		return result, err
 	}
 }

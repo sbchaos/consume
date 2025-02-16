@@ -12,6 +12,12 @@ type Logger interface {
 	Log(args ...any)
 }
 
+type FmtLog struct{}
+
+func (f *FmtLog) Log(args ...any) {
+	fmt.Println(args...)
+}
+
 func Trace[S any, A any](l Logger, name string, c Parser[S, A]) Parser[S, A] {
 	return func(ss stream.SimpleStream[S]) (A, error) {
 		if Debug {
